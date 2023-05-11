@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
+var uniqid = require('uniqid'); // Unique ID generator
 
 const PORT = process.env.PORT || 3001;
 
@@ -39,8 +40,8 @@ app.post('/api/notes', (req, res) => {
     // Build new note from body
     const newNote = {
       title,
-      text
-      // TODO add unique ID
+      text,
+      id: uniqid(title) // will be the title followed by a unique generated ID
     }
 
     fs.readFile('./db/db.json', 'utf8', (err, data) => {
@@ -52,7 +53,6 @@ app.post('/api/notes', (req, res) => {
 
       // add the new note to the file
       const parsed = JSON.parse(data);
-
       parsed.push(newNote);
 
       // Write the updated data to the file
