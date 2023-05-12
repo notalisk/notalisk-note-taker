@@ -71,4 +71,42 @@ app.post('/api/notes', (req, res) => {
   }
 });
 
+app.delete('/api/notes/:id', (req, res) => {
+  const noteId = req.params.id;
+  fs.readFile('./db/db.json', 'utf8', (err, data) => {
+    if (err) {
+      throw err
+    } else {
+      console.log('file read successfully');
+    }
+    
+    // log and then parse data
+    // console.log(data);
+    parsedData = JSON.parse(data);
+
+    let newData = [];
+
+    // loop through the array and only push notes that do not match the id of the deleted note
+    parsedData.forEach(element => {
+      if (element.id == noteId) {
+        console.log(`Successfully deleted ${noteId}`);
+      } else {
+        newData.push(element);
+      }
+    });
+
+    // write new data to file
+    fs.writeFile('./db/db.json', JSON.stringify(newData), (err) => {
+      if (err) {
+        throw err;
+      } else {
+        console.log('file updated successfully');
+      }
+    });
+
+    // refresh the notes showing
+    res.redirect('/api/notes');
+  });
+});
+
 app.listen(PORT, () => console.log(`App listening on port ${PORT}`));
